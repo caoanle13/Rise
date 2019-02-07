@@ -17,5 +17,8 @@ client.on('connect', function () {
             console.log('subscribed to TO_APP successfully!');
         }
     });
-
 });
+
+function sendSleepTriggerMessage() {
+    client.publish('IC.embedded/tEEEm/TO_PI', JSON.stringify({'type': SPEECH_TRIGGER})); 
+}
