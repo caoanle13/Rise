@@ -1,0 +1,40 @@
+{
+  "config": {
+    "ignore_stop_words": true,
+    "max_pattern_length": 1000,
+    "max_queries": 500,
+    "unit_name": "deterministic_intent_parser"
+  },
+  "group_names_to_slot_names": {
+    "group0": "datetime",
+    "group1": "sunrise"
+  },
+  "language_code": "en",
+  "patterns": {
+    "atTime": [
+      "^\\s*wake\\s*up\\s*(?P<group0>%SNIPSDATETIME%)\\s*$",
+      "^\\s*i\\s*would\\s*like\\s*wake\\s*up\\s*at\\s*(?P<group0>%SNIPSDATETIME%)\\s*$",
+      "^\\s*start\\s*alarm\\s*for\\s*(?P<group0>%SNIPSDATETIME%)\\s*$",
+      "^\\s*set\\s*alarm\\s*for\\s*(?P<group0>%SNIPSDATETIME%)\\s*$",
+      "^\\s*wake\\s*up\\s*in\\s*(?P<group0>%SNIPSDATETIME%)\\s*$",
+      "^\\s*set\\s*alarm\\s*at\\s*(?P<group0>%SNIPSDATETIME%)\\s*$",
+      "^\\s*i\\s*want\\s*sleep\\s*until\\s*(?P<group0>%SNIPSDATETIME%)\\s*$"
+    ],
+    "sunrise": [
+      "^\\s*wake\\s*up\\s*at\\s*(?P<group1>%SUNRISE%)\\s*$",
+      "^\\s*wake\\s*up\\s*when\\s*(?P<group1>%SUNRISE%)\\s*(?P<group1_2>%SUNRISE%)\\s*$",
+      "^\\s*i\\s*would\\s*like\\s*wake\\s*up\\s*with\\s*(?P<group1>%SUNRISE%)\\s*$",
+      "^\\s*start\\s*alarm\\s*when\\s*(?P<group1>%SUNRISE%)\\s*comes\\s*up\\s*$",
+      "^\\s*i\\s*want\\s*wake\\s*up\\s*with\\s*natural\\s*light\\s*$",
+      "^\\s*set\\s*alarm\\s*for\\s*(?P<group1>%SUNRISE%)\\s*$"
+    ]
+  },
+  "slot_names_to_entities": {
+    "atTime": {
+      "datetime": "snips/datetime"
+    },
+    "sunrise": {
+      "sunrise": "sunrise"
+    }
+  }
+}

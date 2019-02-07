@@ -1,0 +1,194 @@
+{
+  "entities": {
+    "snips/datetime": {},
+    "sunrise": {
+      "automatically_extensible": false,
+      "data": [
+        {
+          "synonyms": [],
+          "value": "sunrise"
+        },
+        {
+          "synonyms": [],
+          "value": "sun"
+        },
+        {
+          "synonyms": [],
+          "value": "rise"
+        }
+      ],
+      "matching_strictness": 1.0,
+      "use_synonyms": true
+    }
+  },
+  "intents": {
+    "atTime": {
+      "utterances": [
+        {
+          "data": [
+            {
+              "text": "Wake me up "
+            },
+            {
+              "entity": "snips/datetime",
+              "slot_name": "datetime",
+              "text": "Today"
+            }
+          ]
+        },
+        {
+          "data": [
+            {
+              "text": "I would like to wake up at "
+            },
+            {
+              "entity": "snips/datetime",
+              "slot_name": "datetime",
+              "text": "at 8 a.m."
+            }
+          ]
+        },
+        {
+          "data": [
+            {
+              "text": "Start the alarm for "
+            },
+            {
+              "entity": "snips/datetime",
+              "slot_name": "datetime",
+              "text": "4:30 pm"
+            }
+          ]
+        },
+        {
+          "data": [
+            {
+              "text": "Set the alarm for "
+            },
+            {
+              "entity": "snips/datetime",
+              "slot_name": "datetime",
+              "text": "in 1 hour"
+            }
+          ]
+        },
+        {
+          "data": [
+            {
+              "text": "Wake me up in "
+            },
+            {
+              "entity": "snips/datetime",
+              "slot_name": "datetime",
+              "text": "the 3rd tuesday of June"
+            }
+          ]
+        },
+        {
+          "data": [
+            {
+              "text": "Set the alarm at "
+            },
+            {
+              "entity": "snips/datetime",
+              "slot_name": "datetime",
+              "text": "Today"
+            }
+          ]
+        },
+        {
+          "data": [
+            {
+              "text": "I want to sleep until "
+            },
+            {
+              "entity": "snips/datetime",
+              "slot_name": "datetime",
+              "text": "at 8 a.m."
+            }
+          ]
+        }
+      ]
+    },
+    "sunrise": {
+      "utterances": [
+        {
+          "data": [
+            {
+              "text": "Wake me up at "
+            },
+            {
+              "entity": "sunrise",
+              "slot_name": "sunrise",
+              "text": "sunrise"
+            }
+          ]
+        },
+        {
+          "data": [
+            {
+              "text": "Wake me up when the "
+            },
+            {
+              "entity": "sunrise",
+              "slot_name": "sunrise",
+              "text": "sun"
+            },
+            {
+              "entity": "sunrise",
+              "slot_name": "sunrise",
+              "text": "rise"
+            }
+          ]
+        },
+        {
+          "data": [
+            {
+              "text": "I would like to wake up with the "
+            },
+            {
+              "entity": "sunrise",
+              "slot_name": "sunrise",
+              "text": "sunrise"
+            }
+          ]
+        },
+        {
+          "data": [
+            {
+              "text": "Start the alarm when "
+            },
+            {
+              "entity": "sunrise",
+              "slot_name": "sunrise",
+              "text": "sun"
+            },
+            {
+              "text": " comes up"
+            }
+          ]
+        },
+        {
+          "data": [
+            {
+              "text": "I want to wake up with natural light"
+            }
+          ]
+        },
+        {
+          "data": [
+            {
+              "text": "Set the alarm for "
+            },
+            {
+              "entity": "sunrise",
+              "slot_name": "sunrise",
+              "text": "rise"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "language": "en"
+}

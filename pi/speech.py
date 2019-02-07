@@ -1,7 +1,9 @@
 import paho.mqtt.client as mqtt
 import json
 import speech_recognition as sr
+from nlp import NLP
 
+nlp = NLP()
 
 # Constants
 SPEECH_TRIGGER = 0
@@ -10,6 +12,21 @@ client = mqtt.Client()
 client.connect("test.mosquitto.org",port=1883)
 client.subscribe("IC.embedded/tEEEm/TO_PI")
 
+def recognize():
+    r = sr.Recognizer()
+    print('Speech starts listening')
+    with sr.Microphone() as source:
+        print("Say something!")
+        audio = r.listen(source)
+    try:
+        print('Speech starts recognition')
+        recognised = r.recognize_google(audio)
+        print('Speech stops recognition')
+        return True, recognised
+    except Exception as e:
+        print("Error:", e)
+        return False, e
+
 def on_message(client, userdata, message):
     #print('received message')
     message_payload = json.loads(message.payload.decode())
@@ -17,19 +34,13 @@ def on_message(client, userdata, message):
     
     if message_type == SPEECH_TRIGGER:
         #print('this is a speech trigger from the web page')
-
-        r = sr.Recognizer()
-        print('Speech starts listening')
-        with sr.Microphone() as source:
-            print("Say something!")
-            audio = r.listen(source)
-            try:
-                print("You said " + r.recognize_google(audio))
-            except sr.UnknownValueError:
-                print("Not understood")
-            except sr.RequestError as e:
-                print("Could not request results from Google Speech Recognition service; {0}".format(e))
-
+        speech_success, text = recognize()
+        if speech_success: 
+            print("output of speech recognition:", text)
+            nlp_success, meaning = nlp.parse(text)
+            if nlp_success:
+                print("info from NLP:", meaning)
+                
 
 
 client.on_message = on_message

@@ -1,0 +1,44 @@
+# sunrise intent
+---
+type: intent
+name: sunrise
+slots:
+  - name: sunrise
+    entity: sunrise
+
+utterances:
+  - Wake me up at [sunrise]
+  - Wake me up when the [sunrise] [sunrise]
+  - I would like to wake up with the [sunrise]
+  - Start the alarm when [sunrise] comes up
+  - I want to wake up with natural light
+  - Set the alarm for [sunrise]
+
+
+# atTime intent
+---
+type: intent
+name: atTime
+slots:
+  - name: datetime
+    entity: snips/datetime
+utterances:
+  - Wake me up [datetime]
+  - I would like to wake up at [datetime]
+  - Start the alarm for [datetime]
+  - Set the alarm for [datetime]
+  - Wake me up in [datetime]
+  - Set the alarm at [datetime]
+  - I want to sleep until [datetime]
+
+
+
+# sunrise entity
+---
+type: entity
+name: sunrise
+automatically_extensible: no
+values:
+- sunrise
+- sun
+- rise
