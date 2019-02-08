@@ -3,20 +3,26 @@
 import time
 import json
 import urllib.request
+
 from datetime import datetime, timedelta
 from timing import Timing
 from time import sleep
 
 # sensor setup
+# distance
 from distance_sensor import DistanceSensor
-from temperature_sensor import TemperatureSensor
-from temperature_sensor import HumiditySensor
-temperature_data = []
-temperature = TemperatureSensor()
-humidity_data = []
-humidity = HumiditySensor()
 distance = DistanceSensor()
 handDetected = False
+
+# temperature
+from temperature_sensor import TemperatureSensor
+temperature_data = []
+temperature = TemperatureSensor()
+
+# humidity
+from temperature_sensor import HumiditySensor
+humidity_data = []
+humidity = HumiditySensor()
 
 # mqtt setup
 import paho.mqtt.client as mqtt
@@ -45,23 +51,32 @@ def on_connect(client, userdata, flags, rc):
         client.bad_connection_flag=True
 
 def on_message(client, userdata, message):
+
     # check the topic
     if message.topic == piTopic:
+
         # read from the topic
         message = json.loads(message.payload.decode())
-        # confirms time has been set
+
+        # time has been set
         if message['type'] == TIME_SET:
+
             t = Timing()
+
             # type 1: 'set alarm at sunrise'
             if message['nature'] == SUNRISE:
                 wakeup_datetime = t.sunrise()
+
             # type 2: 'set alarm at time ___'
             elif message['nature'] == AT:
                 message_time = message['time']
                 wakeup_datetime = t.timeAt(message_time)
+
             # confirm time
             print("wake up date time: ", wakeup_datetime)
 
+            # while user is sleeping, i.e. alarm hasn't gone off yet
+            # monitor temperature and humidity of room
             while datetime.now() < wakeup_datetime:
                 # appending to arrays for chart display
                 # temperature data
@@ -73,21 +88,23 @@ def on_message(client, userdata, message):
                 # read every 10 minutes
                 sleep(600)
 
+            # time to wake up!
             start_alarm_message = json.dumps({'type': START_ALARM})
             client.publish(appTopic, start_alarm_message)
 
-            #activate distance sensor here
+            # activate distance sensor to check for user's hand
             while not handDetected:
                 distance = distance.read()
                 if distance < 200:
                     # hand has come within threshold
                     handDetected = True
 
+            # turn alarm off
             stop_alarm_message = json.dumps({'type': STOP_ALARM})
             client.publish(appTopic, stop_alarm_message)
 
         elif message['type'] == ASK_RESULTS:
-            results_message = json.dumps({'type': RESULTS, 'data': temperature_data})
+            results_message = json.dumps({'type': RESULTS, 'temp_data': temperature_data, 'humid_data': humidity_data})
             client.publish(appTopic, results_message)
 
 
