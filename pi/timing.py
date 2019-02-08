@@ -1,54 +1,34 @@
-#! usr/bin/env python3
-
-import time
+from datetime import datetime, timedelta
+import urllib.request
+import os, ssl
 import json
-import paho.mqtt.client as mqtt
 
-TIME_SET = 1
-SUNRISE = 0
-AT = 1
+class Timing:
 
-piTopic = "IC.embedded/tEEm/TO_PI"
+    def sunrise(self):
+        if (not os.environ.get('PYTHONHTTPSVERIFY', '') and
+            getattr(ssl, '_create_unverified_context', None)): 
+            ssl._create_default_https_context = ssl._create_unverified_context
+        with urllib.request.urlopen("https://api.sunrise-sunset.org/json?lat=51.508530&lng=-0.076132&date=tomorrow") as r:
+            response = r.read()
+        sunrise = json.loads(response.decode())['results']['sunrise'].split(' ')[0]
+        [sunrise_h, sunrise_m, sunrise_s] = [int(x) for x in sunrise.split(':')]
+        tomorrow = datetime.now() + timedelta(days=1)
+        return tomorrow.replace(hour=sunrise_h, minute=sunrise_m, second=sunrise_s)
 
-# connecting to mqtt
+    def timeAt(self, message_time):
+        wakeup_date, wakeup_time, ignore = message_time.split(' ')
+        year, month, day = [int(x) for x in wakeup_date.split('-')]
+        hour, minute, second = [int(x) for x in wakeup_time.split(':')]
+        return datetime.now().replace(year=year, month=month, day=day,
+                                    hour=hour, minute=minute, second=second)
 
-client = mqtt.Client()
-client.tls_set(ca_certs="mosquitto.org.crt", certfile="client.crt",keyfile="client.key")
-client.connect("test.mosquitto.org",port=1883)
-print("connection success")
-client.subscribe(piTopic)
 
+if __name__ == "__main__":
 
-# print time of START_ALARM
+    t = Timing()
+    sunrise = t.sunrise()
+    custom_time = t.timeAt("2019-02-09 09:30:00 +00:00")
 
-def on_message(client, userdata, message):
-    # check the topic
-    if message.topic == piTopic
-
-        x = json.loads(message.payload)
-        command = x['type']
-
-        # check TIME_SET
-        if command == TIME_SET:
-            # check type of input
-            nature = x['nature']
-            # nature 1: SUNRISE
-            if nature == SUNRISE:
-
-            # type 2: AT
-            elif nature == AT:
-            # access nature
-            # access time
-            # decode
-            # play with string
-            # datetime python obj
-
-def sunrise(x):
-    # process data if nature = SUNRISE
-
-def atTime(x):
-    # process data if nature = AT
-
-client.on_message = on_message
-
-client.loop_forever()
+    print("sunrise:", sunrise)
+    print("custom time:", custom_time)
