@@ -8,8 +8,15 @@ from timing import Timing
 from time import sleep
 
 # sensor setup
-#from distance_sensor import DistanceSensor
+from distance_sensor import DistanceSensor
 from temperature_sensor import TemperatureSensor
+from temperature_sensor import HumiditySensor
+temperature_data = []
+temperature = TemperatureSensor()
+humidity_data = []
+humidity = HumiditySensor()
+distance = DistanceSensor()
+handDetected = False
 
 # mqtt setup
 import paho.mqtt.client as mqtt
@@ -28,10 +35,6 @@ START_ALARM = 0
 STOP_ALARM = 1
 RESULTS = 2
 
-temperature_data = []
-temperature = TemperatureSensor()
-handDetected = False
-
 def on_connect(client, userdata, flags, rc):
     if rc==0:
         print('connected OK')
@@ -49,7 +52,6 @@ def on_message(client, userdata, message):
         # confirms time has been set
         if message['type'] == TIME_SET:
             t = Timing()
-
             # type 1: 'set alarm at sunrise'
             if message['nature'] == SUNRISE:
                 wakeup_datetime = t.sunrise()
@@ -57,14 +59,18 @@ def on_message(client, userdata, message):
             elif message['nature'] == AT:
                 message_time = message['time']
                 wakeup_datetime = t.timeAt(message_time)
-
             # confirm time
             print("wake up date time: ", wakeup_datetime)
 
             while datetime.now() < wakeup_datetime:
-                r = temperature.read()
-                temperature_data.append(r)
-                # sleep(0.2) surely this is far too frequent a measurement? (0.2s)
+                # appending to arrays for chart display
+                # temperature data
+                temp = temperature.read()
+                temperature_data.append(temp)
+                # humidity data
+                humid = humidty.read()
+                humidity_data.append(humid)
+                # read every 10 minutes
                 sleep(600)
 
             start_alarm_message = json.dumps({'type': START_ALARM})
@@ -72,9 +78,11 @@ def on_message(client, userdata, message):
 
             #activate distance sensor here
             while not handDetected:
-                # do the logic for detecting hand here
-                # handDetected will be a global variable for now
-                # when hand is detected: handDetected=True so loop exits
+                distance = distance.read()
+                if distance < 200:
+                    # hand has come within threshold
+                    handDetected = True
+
             stop_alarm_message = json.dumps({'type': STOP_ALARM})
             client.publish(appTopic, stop_alarm_message)
 
