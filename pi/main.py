@@ -23,6 +23,7 @@ piTopic = "IC.embedded/tEEEm/TO_PI"
 appTopic = "IC.embedded/tEEEm/TO_APP"
 
 temperature_data = []
+handDetected = False
 
 def on_connect(client, userdata, flags, rc):
     if rc==0:
