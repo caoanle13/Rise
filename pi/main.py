@@ -4,6 +4,7 @@ import time
 import json
 import paho.mqtt.client as mqtt
 #from distance_sensor import DistanceSensor
+from temperature_sensor import TemperatureSensor
 import urllib.request
 from datetime import datetime, timedelta
 from timing import Timing
@@ -23,6 +24,7 @@ piTopic = "IC.embedded/tEEEm/TO_PI"
 appTopic = "IC.embedded/tEEEm/TO_APP"
 
 temperature_data = []
+temperature = TemperatureSensor()
 handDetected = False
 
 def on_connect(client, userdata, flags, rc):
@@ -53,9 +55,10 @@ def on_message(client, userdata, message):
             print("wake up date time: ", wakeup_datetime)
 
             while datetime.now() < wakeup_datetime:
-                # r = reading from temperature sensor (maybe create another class for this (see distance_sensor.py for reference))
-                # temperature_data.append(r) (for now we'll keep temperature_data as a global variable)
-                # time.sleep(<interval of seconds we want between each read>)
+                r = temperature.read()
+                temperature_data.append(r)
+                time.sleep(0.2)
+
             start_alarm_message = json.dumps({'type': START_ALARM})
             client.publish(appTopic, start_alarm_message)
             #activate distance sensor here
