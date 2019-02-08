@@ -8,12 +8,21 @@ import urllib.request
 from datetime import datetime, timedelta
 from timing import Timing
 
-#CONSTANTS
+# CONSTANTS on piTopic
+SPEECH_TRIGGER = 0
 TIME_SET = 1
 SUNRISE = 0
 AT = 1
+ASK_RESULTS = 2
+#CONSTANTS on appTopic
+START_ALARM = 0
+STOP_ALARM = 1
+RESULTS = 2 
 
 piTopic = "IC.embedded/tEEEm/TO_PI"
+appTopic = "IC.embedded/tEEEm/TO_APP"
+
+temperature_data = []
 
 def on_connect(client, userdata, flags, rc):
     if rc==0:
@@ -41,6 +50,24 @@ def on_message(client, userdata, message):
                 wakeup_datetime = t.timeAt(message_time)
             
             print("wake up date time: ", wakeup_datetime)
+
+            while datetime.now() < wakeup_datetime:
+                # r = reading from temperature sensor (maybe create another class for this (see distance_sensor.py for reference))
+                # temperature_data.append(r) (for now we'll keep temperature_data as a global variable)
+                # time.sleep(<interval of seconds we want between each read>)
+            start_alarm_message = json.dumps({'type': START_ALARM})
+            client.publish(appTopic, start_alarm_message)
+            #activate distance sensor here
+            while not handDetected:
+                # do the logic for detecting hand here
+                # handDetected will be a global variable for now
+                # when hand is detected: handDetected=True so loop exits
+            stop_alarm_message = json.dumps({'type': STOP_ALARM})
+            client.publish(appTopic, stop_alarm_message)
+
+        elif message['type'] == ASK_RESULTS:
+            results_message = json.dumps({'type': RESULTS, 'data': temperature_data})
+            client.publish(appTopic, results_message)
 
 
 mqtt.Client.connected_flag = False
