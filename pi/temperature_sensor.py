@@ -1,17 +1,33 @@
-import smbus
+import busio
+import board
+import adafruit_si7021
 
 class TemperatureSensor:
 
-    bus = smbus.SMBus(1)
-    address = 0x40
+    def __init__(self):
+        i2c = busio.I2C(board.SCL, board.SDA)
+        self.sensor = adafruit_si7021.SI7021(i2c)
 
     def read(self):
-        bus.writebyte(address, 0xf3)  
-        data = bus.read_i2c_block_data(address, 0xe2, 2)
-        raw = int.from_bytes(data,'big')
-        return ((175.72*raw)/65536)-46.85
+        # the sensor temperature in degrees celsius
+        temp = self.sensor.temperature
+        return temp
+
+class HumiditySensor:
+
+    def __init__(self):
+        i2c = busio.I2C(board.SCL, board.SDA)
+        self.sensor = adafruit_si7021.SI7021(i2c)
+
+    def read(self):
+        # the percentage humidity as a value from 0 to 100%
+        humid = self.sensor.relative_humidity
+        return humid
 
 if __name__ == "__main__":
 
     temperature_sensor = TemperatureSensor()
     print(temperature_sensor.read())
+
+    humidity_sensor = HumiditySensor()
+    print(humidity_sensor.read())

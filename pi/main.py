@@ -2,26 +2,31 @@
 
 import time
 import json
-import paho.mqtt.client as mqtt
-#from distance_sensor import DistanceSensor
-from temperature_sensor import TemperatureSensor
 import urllib.request
 from datetime import datetime, timedelta
 from timing import Timing
+from time import sleep
 
-# CONSTANTS on piTopic
+# sensor setup
+#from distance_sensor import DistanceSensor
+from temperature_sensor import TemperatureSensor
+
+# mqtt setup
+import paho.mqtt.client as mqtt
+piTopic = "IC.embedded/tEEEm/TO_PI"
+appTopic = "IC.embedded/tEEEm/TO_APP"
+
+# constants on piTopic
 SPEECH_TRIGGER = 0
 TIME_SET = 1
 SUNRISE = 0
 AT = 1
 ASK_RESULTS = 2
-#CONSTANTS on appTopic
+
+# constants on appTopic
 START_ALARM = 0
 STOP_ALARM = 1
-RESULTS = 2 
-
-piTopic = "IC.embedded/tEEEm/TO_PI"
-appTopic = "IC.embedded/tEEEm/TO_APP"
+RESULTS = 2
 
 temperature_data = []
 temperature = TemperatureSensor()
@@ -39,28 +44,32 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, message):
     # check the topic
     if message.topic == piTopic:
-
+        # read from the topic
         message = json.loads(message.payload.decode())
-        
+        # confirms time has been set
         if message['type'] == TIME_SET:
             t = Timing()
-            
+
+            # type 1: 'set alarm at sunrise'
             if message['nature'] == SUNRISE:
                 wakeup_datetime = t.sunrise()
-
+            # type 2: 'set alarm at time ___'
             elif message['nature'] == AT:
                 message_time = message['time']
                 wakeup_datetime = t.timeAt(message_time)
-            
+
+            # confirm time
             print("wake up date time: ", wakeup_datetime)
 
             while datetime.now() < wakeup_datetime:
                 r = temperature.read()
                 temperature_data.append(r)
-                time.sleep(0.2)
+                # sleep(0.2) surely this is far too frequent a measurement? (0.2s)
+                sleep(600)
 
             start_alarm_message = json.dumps({'type': START_ALARM})
             client.publish(appTopic, start_alarm_message)
+
             #activate distance sensor here
             while not handDetected:
                 # do the logic for detecting hand here
