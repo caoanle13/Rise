@@ -8,6 +8,10 @@ from datetime import datetime, timedelta
 from timing import Timing
 from time import sleep
 
+# LED setup
+from led import LED
+led = LED(1000, 1000, 1000)
+
 # sensor setup
 # distance
 from distance_sensor import DistanceSensor
