@@ -46,8 +46,12 @@ function sendSleepTriggerMessage() {
     client.publish('IC.embedded/tEEEm/TO_PI', JSON.stringify({'type': SPEECH_TRIGGER})); 
 }
 
-function showTemperatureData(){
-    console.log('show temperature data here');
+function askNightData(){
+    console.log('ask for night data here');
     client.publish('IC.embedded/tEEEm/TO_PI', JSON.stringify({'type': ASK_RESULTS}));
     // use temperatureData with a graph library to create a chart.
+}
+
+function launchModal(){
+    $('#graph_modal').modal('show');
 }
