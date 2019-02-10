@@ -7,7 +7,7 @@ const START_ALARM = 0;
 const STOP_ALARM = 1;
 const RESULTS = 2;
 
-var audio = new Audio('alarm.mp3');
+var audio = document.getElementById('alarm');
 var temperatureData;
 
 //var audio = document.getElementById('alarm')
@@ -30,10 +30,10 @@ client.on('message', function (topic, message) {
     if(topic === 'IC.embedded/tEEEm/TO_APP'){
         if (message.type == START_ALARM){
             console.log('play here')
-            //audio.play();
+            audio.play();
         }
         else if (message.type == STOP_ALARM){
-            //audio.pause();
+            audio.pause();
             console.log('pause audio');
         }
         else if (message.type == RESULTS){
