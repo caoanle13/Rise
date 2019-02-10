@@ -37,7 +37,8 @@ client.on('message', function (topic, message) {
             console.log('pause audio');
         }
         else if (message.type == RESULTS){
-            temperatureData = message.data;
+            sensorData = message.data;
+            displayGraphModal(sensorData);
         }
     }
 });
@@ -52,6 +53,24 @@ function askNightData(){
     // use temperatureData with a graph library to create a chart.
 }
 
-function launchModal(){
+function displayGraphModal(sensorData){
+    var ctx = document.getElementById("my_chart").getContext('2d');
+    let chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        datasets:[ {data: [10, 20, 30, 40, 50, 60] }  ],
+        labels: ['1 AM', '2 AM', '3 AM', '4 AM', '5 AM', '6 AM'],
+    },
+    options: {
+        scales: {
+            xAxes: [{
+                ticks: {
+                    min: '1 AM',
+                    max: '4 AM'
+                }
+            }]
+        }
+    }
+});
     $('#graph_modal').modal('show');
 }
