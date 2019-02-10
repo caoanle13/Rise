@@ -5,8 +5,9 @@
     <meta charset="UTF-8">
     <title>title</title>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-
+    <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <script src="https://unpkg.com/mqtt@2.12.0/dist/mqtt.min.js"></script>
     <audio id="alarm">
       <source src="alarm.mp3" type="audio/mpeg">
@@ -17,13 +18,34 @@
 
 
   <body>
-    <h1>Smart Alarm Clock</h1>
-    <button class ='btn-primary' onclick='sendSleepTriggerMessage()'>Sleep now</button>
-    <button class ='btn-primary' onclick='askNightData()'>See Night Data</button>
 
-    <!-- Button trigger modal -->
-    <button type="button" onclick="launchModal()" class="btn btn-primary btn-lg">Launch demo modal</button>
+
+    <div class="jumbotron">
+      <div class="container">
+          <h1 class="display-4">Rise - Smart Alarm Clock</h1>
+          <p class="lead">Wake up at sunrise or at your preferred time, simply ask.</p>
+          <p class="lead">Monitor temperature and humidity of your room throughout your night.</p>
+      </div>
+    </div>
+ 
+    <div class="container">
+      <!-- Time Widget  -->
+      <div style="text-align:center;padding:1em 0;">
+        <iframe src="https://www.zeitverschiebung.net/clock-widget-iframe-v2?language=en&size=large&timezone=Europe%2FLondon" width="100%" height="140" frameborder="0" seamless></iframe>
+      </div>
   
+      <hr>
+      <!-- Buttons  -->
+      <div class="text-center">
+          <button class ='btn-primary btn-lg' onclick='sendSleepTriggerMessage()'>
+              <i class="fas fa-bed fa-6x" id="sleep_icon"></i>
+          </button>
+          <button class ='btn-primary btn-lg' onclick='askNightData()'>
+              <i class="fas fa-chart-line fa-6x"></i>
+          </button>
+      </div>
+    </div>
+
     <!-- Modal to display sensor data -->
     <div class="modal fade" id="graph_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog modal-dialog-centered" role="document">
