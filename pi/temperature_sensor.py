@@ -10,7 +10,8 @@ class TemperatureSensor:
 
     def read(self):
         # the sensor temperature in degrees celsius
-        temp = self.sensor.temperature
+        # round to 2dp
+        temp = round(self.sensor.temperature,2)
         return temp
 
 class HumiditySensor:
@@ -21,7 +22,8 @@ class HumiditySensor:
 
     def read(self):
         # the percentage humidity as a value from 0 to 100%
-        humid = self.sensor.relative_humidity
+        # round to 2dp
+        humid = round(self.sensor.relative_humidity,2)
         return humid
 
 if __name__ == "__main__":
