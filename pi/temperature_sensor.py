@@ -1,6 +1,7 @@
 import busio
 import board
 import adafruit_si7021
+from datetime import datetime
 
 class TemperatureSensor:
 
@@ -26,6 +27,15 @@ class HumiditySensor:
         humid = round(self.sensor.relative_humidity,2)
         return humid
 
+class CurrentTime:
+
+    def read(self):
+        now = datetime.now()
+        hour = str(now.hour)
+        min = str(now.minute)
+        currTime = hour + ":" + min
+        return currTime
+
 if __name__ == "__main__":
 
     temperature_sensor = TemperatureSensor()
@@ -33,3 +43,6 @@ if __name__ == "__main__":
 
     humidity_sensor = HumiditySensor()
     print(humidity_sensor.read())
+
+    time_of_reading = CurrentTime()
+    print(time_of_reading.read())
