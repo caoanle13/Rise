@@ -10,7 +10,7 @@ from time import sleep
 
 # LED setup
 from led import LED
-led = LED(1000, 1000, 1000)
+led = LED(1000, 1000, 1000, 100, 100, 100)
 
 # sensor setup
 # distance
@@ -27,6 +27,11 @@ temperature = TemperatureSensor()
 from temperature_sensor import HumiditySensor
 humidity_data = []
 humidity = HumiditySensor()
+
+# time of temperature + humidity reading
+from temperature_sensor import CurrentTime
+time_data = []
+current_time = CurrentTime()
 
 # mqtt setup
 import paho.mqtt.client as mqtt
@@ -89,8 +94,21 @@ def on_message(client, userdata, message):
                 # humidity data
                 humid = humidty.read()
                 humidity_data.append(humid)
+                # time of each reading
+                curr_time = current_time.read()
+                time_data.append(curr_time)
                 # read every 10 minutes
                 sleep(600)
+
+            # add all temperature sensor data to a dictionary
+            # monitors room overnight and then displays graphically on web page
+            night_data = {
+                'type': RESULTS,
+                'temp_data': temperature_data,    # array of ints
+                'humid_data': humidity_data,      # array of ints
+                'time': time_data                 # array strings: hh:mm
+            }
+            client.publish(appTopic, night_data)
 
             # time to wake up!
             start_alarm_message = json.dumps({'type': START_ALARM})
