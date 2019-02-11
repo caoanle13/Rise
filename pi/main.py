@@ -9,29 +9,29 @@ from timing import Timing
 from time import sleep
 
 # LED setup
-from led import LED
-led = LED(1000, 1000, 1000, 100, 100, 100)
+#from led import LED
+#led = LED(1000, 1000, 1000, 100, 100, 100)
 
 # sensor setup
 # distance
-from distance_sensor import DistanceSensor
-distance = DistanceSensor()
+#from distance_sensor import DistanceSensor
+#distance = DistanceSensor()
 handDetected = False
 
 # temperature
-from temperature_sensor import TemperatureSensor
+#from temperature_sensor import TemperatureSensor
 temperature_data = []
-temperature = TemperatureSensor()
+#temperature = TemperatureSensor()
 
 # humidity
-from temperature_sensor import HumiditySensor
+#from temperature_sensor import HumiditySensor
 humidity_data = []
-humidity = HumiditySensor()
+#humidity = HumiditySensor()
 
 # time of temperature + humidity reading
-from temperature_sensor import CurrentTime
+#from temperature_sensor import CurrentTime
 time_data = []
-current_time = CurrentTime()
+#current_time = CurrentTime()
 
 # mqtt setup
 import paho.mqtt.client as mqtt
@@ -49,6 +49,7 @@ ASK_RESULTS = 2
 START_ALARM = 0
 STOP_ALARM = 1
 RESULTS = 2
+SPEAK = 3
 
 def on_connect(client, userdata, flags, rc):
     if rc==0:
@@ -118,13 +119,16 @@ def on_message(client, userdata, message):
         elif message['type'] == ASK_RESULTS:
             # add all temperature sensor data to a dictionary
             # monitors room overnight and then displays graphically on web page
-            night_data = {
-                'type': RESULTS,
-                'temp_data': temperature_data,    # array of ints
-                'humid_data': humidity_data,      # array of ints
-                'time': time_data                 # array strings: hh:mm
-            }
-            client.publish(appTopic, night_data)
+            if len(temperature_data) or len(humidity_data):
+                client.publish(appTopic, json.dumps({'type': SPEAK, 'say': 'There is currently no data for your night'}))
+            else:
+                night_data = {
+                    'type': RESULTS,
+                    'temp_data': temperature_data,    # array of ints
+                    'humid_data': humidity_data,      # array of ints
+                    'time': time_data                 # array strings: hh:mm
+                }
+                client.publish(appTopic, night_data)
 
 
 mqtt.Client.connected_flag = False
