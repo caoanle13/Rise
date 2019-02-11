@@ -6,6 +6,7 @@ const ASK_RESULTS = 2;
 const START_ALARM = 0;
 const STOP_ALARM = 1;
 const RESULTS = 2;
+const SPEAK = 3;
 
 var audio = document.getElementById('alarm');
 var temperatureData;
@@ -29,21 +30,27 @@ client.on('message', function (topic, message) {
     var message = JSON.parse(message)
     if(topic === 'IC.embedded/tEEEm/TO_APP'){
         if (message.type == START_ALARM){
-            console.log('play here')
             audio.play();
+            $('#wake_up_modal').modal('show');
         }
         else if (message.type == STOP_ALARM){
             audio.pause();
-            console.log('pause audio');
+            $('#wake_up_modal').modal('hide');
         }
         else if (message.type == RESULTS){
-            sensorData = message.data;
+            tempData = message.temp;
+            humidData = message.humid;
+            timeData = message.time;
             displayGraphModal(sensorData);
+        }
+        else if (message.type == SPEAK){
+            responsiveVoice.speak(message.say);
         }
     }
 });
 
 function sendSleepTriggerMessage() {
+    responsiveVoice.speak("When would you like to wake up?");
     client.publish('IC.embedded/tEEEm/TO_PI', JSON.stringify({'type': SPEECH_TRIGGER})); 
 }
 
@@ -58,15 +65,29 @@ function displayGraphModal(sensorData){
     let chart = new Chart(ctx, {
     type: 'line',
     data: {
-        datasets:[ {data: [10, 20, 30, 40, 50, 60] }  ],
+        datasets:[  {
+                    data: [50, 10, 30, 20, 50, 60],
+                    borderColor:  '#ffffff',
+                    backgroundColor: '#888888',
+                    fill: true
+                    } 
+                ],
         labels: ['1 AM', '2 AM', '3 AM', '4 AM', '5 AM', '6 AM'],
     },
     options: {
+        legend: {
+            display: true,
+            position: 'right',
+            labels: {
+                text: 'Temperature',
+                boxWidth: 20,
+            }
+        },
         scales: {
             xAxes: [{
                 ticks: {
                     min: '1 AM',
-                    max: '4 AM'
+                    max: '6 AM'
                 }
             }]
         }

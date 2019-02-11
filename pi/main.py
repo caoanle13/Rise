@@ -20,7 +20,7 @@ handDetected = False
 
 # temperature
 #from temperature_sensor import TemperatureSensor
-temperature_data = []
+#temperature_data = []
 #temperature = TemperatureSensor()
 
 # humidity
@@ -28,10 +28,11 @@ temperature_data = []
 humidity_data = []
 #humidity = HumiditySensor()
 
+
 # time of temperature + humidity reading
 #from temperature_sensor import CurrentTime
-time_data = []
 #current_time = CurrentTime()
+
 
 # mqtt setup
 import paho.mqtt.client as mqtt
@@ -76,7 +77,7 @@ def on_message(client, userdata, message):
             # type 1: 'set alarm at sunrise'
             if message['nature'] == SUNRISE:
                 wakeup_datetime = t.sunrise()
-
+                                
             # type 2: 'set alarm at time ___'
             elif message['nature'] == AT:
                 message_time = message['time']

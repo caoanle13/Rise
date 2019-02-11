@@ -21,7 +21,6 @@ class NLP():
         print('finished training')
         self.engine.persist('nlu_engine')
         """
-    
         self.engine = SnipsNLUEngine.from_path('nlu_engine')
         print('snips engine ready')
         
@@ -39,8 +38,8 @@ class NLP():
             return True, output          
         except Exception as e:
             return False, e
-        
-        
+
+
 
 
 if __name__ == '__main__':

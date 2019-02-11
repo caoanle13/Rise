@@ -4,11 +4,19 @@ import speech_recognition as sr
 from nlp import NLP
 import time
 
-# Constants
+# constants on piTopic
 SPEECH_TRIGGER = 0
 TIME_SET = 1
 SUNRISE = 0
 AT = 1
+ASK_RESULTS = 2
+
+# constants on appTopic
+START_ALARM = 0
+STOP_ALARM = 1
+RESULTS = 2
+SPEAK = 3
+
 TO_PI = "IC.embedded/tEEEm/TO_PI"
 TO_APP = "IC.embedded/tEEEm/TO_APP"
 
@@ -37,12 +45,14 @@ def recognize():
         return False, e
 
 def on_message(client, userdata, message):
-    #print('received message')
+    
     message_payload = json.loads(message.payload.decode())
     message_type = message_payload['type']
     
     if message_type == SPEECH_TRIGGER:
-        #print('this is a speech trigger from the web page')
+
+        time.sleep(2)
+        
         speech_success, text = recognize()
         if speech_success: 
             print("output of speech recognition:", text)
@@ -51,10 +61,19 @@ def on_message(client, userdata, message):
             if nlp_success:
                 print("output of natural language processing:", meaning)
                 if meaning == 'sunrise':
-                    data = json.dumps({'type': TIME_SET, 'nature': SUNRISE})
+                    pi_data = json.dumps({'type': TIME_SET, 'nature': SUNRISE})
+                    app_data = json.dumps({'type': SPEAK, 'say': "Okay I will wake you up when the sun rises"})
                 else:
-                    data = json.dumps({'type': TIME_SET, 'nature': AT, 'time': meaning})
-                client.publish(TO_PI, data)
+                    pi_data = json.dumps({'type': TIME_SET, 'nature': AT, 'time': meaning})
+                    hour = str(int(meaning.split(' ')[1].split(':')[0]))
+                    if hour == '0':
+                        hour = 'midnight'
+                    minute = str(int(meaning.split(' ')[1].split(':')[1]))
+                    if minute == '0':
+                        minute = ''
+                    app_data = json.dumps({'type': SPEAK, 'say': "Okay I will set an alarm for " + str(hour) + ' ' + str(minute)})
+                client.publish(TO_PI, pi_data)
+                client.publish(TO_APP, app_data)
 
 
 mqtt.Client.connected_flag = False

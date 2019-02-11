@@ -117,11 +117,11 @@
       {
         "args": {
           "entity_labels": [
-            "snips/duration",
+            "snips/number",
             "snips/temperature",
             "snips/datetime",
+            "snips/duration",
             "snips/percentage",
-            "snips/number",
             "snips/ordinal",
             "snips/amountOfMoney"
           ],
@@ -153,7 +153,7 @@
     "tagging_scheme": 1,
     "unit_name": "crf_slot_filler"
   },
-  "crf_model_file": "model0ry3pgi1.crfsuite",
+  "crf_model_file": "modelnvx7sf52.crfsuite",
   "intent": "sunrise",
   "language_code": "en",
   "slot_name_mapping": {
