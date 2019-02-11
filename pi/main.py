@@ -100,16 +100,6 @@ def on_message(client, userdata, message):
                 # read every 10 minutes
                 sleep(600)
 
-            # add all temperature sensor data to a dictionary
-            # monitors room overnight and then displays graphically on web page
-            night_data = {
-                'type': RESULTS,
-                'temp_data': temperature_data,    # array of ints
-                'humid_data': humidity_data,      # array of ints
-                'time': time_data                 # array strings: hh:mm
-            }
-            client.publish(appTopic, night_data)
-
             # time to wake up!
             start_alarm_message = json.dumps({'type': START_ALARM})
             client.publish(appTopic, start_alarm_message)
@@ -126,8 +116,15 @@ def on_message(client, userdata, message):
             client.publish(appTopic, stop_alarm_message)
 
         elif message['type'] == ASK_RESULTS:
-            results_message = json.dumps({'type': RESULTS, 'temp_data': temperature_data, 'humid_data': humidity_data})
-            client.publish(appTopic, results_message)
+            # add all temperature sensor data to a dictionary
+            # monitors room overnight and then displays graphically on web page
+            night_data = {
+                'type': RESULTS,
+                'temp_data': temperature_data,    # array of ints
+                'humid_data': humidity_data,      # array of ints
+                'time': time_data                 # array strings: hh:mm
+            }
+            client.publish(appTopic, night_data)
 
 
 mqtt.Client.connected_flag = False
