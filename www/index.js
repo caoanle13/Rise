@@ -2,6 +2,8 @@
 const SPEECH_TRIGGER = 0;
 const TIME_SET = 1;
 const ASK_RESULTS = 2;
+const TEMPERATURE = 3;
+const HUMIDITY = 4;
 // TO_APP TOPIC MESSAGES
 const START_ALARM = 0;
 const STOP_ALARM = 1;
@@ -54,10 +56,12 @@ function sendSleepTriggerMessage() {
     client.publish('IC.embedded/tEEEm/TO_PI', JSON.stringify({'type': SPEECH_TRIGGER})); 
 }
 
-function askNightData(){
-    console.log('ask for night data here');
-    client.publish('IC.embedded/tEEEm/TO_PI', JSON.stringify({'type': ASK_RESULTS}));
-    // use temperatureData with a graph library to create a chart.
+function askTempData(){
+    client.publish('IC.embedded/tEEEm/TO_PI', JSON.stringify({'type': ASK_RESULTS, 'data': TEMPERATURE}));
+}
+
+function askHumidData(){
+    client.publish('IC.embedded/tEEEm/TO_PI', JSON.stringify({'type': ASK_RESULTS, 'data': HUMIDITY}));
 }
 
 function displayGraphModal(sensorData){
