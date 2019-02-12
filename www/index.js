@@ -2,6 +2,8 @@
 const SPEECH_TRIGGER = 0;
 const TIME_SET = 1;
 const ASK_RESULTS = 2;
+const RECEIVED_START_ALARM = 3;
+const RECEIVED_STOP_ALARM = 4;
 const TEMPERATURE = 0;
 const HUMIDITY = 1;
 // TO_APP TOPIC MESSAGES
@@ -34,10 +36,12 @@ client.on('message', function (topic, message) {
         if (message.type == START_ALARM){
             audio.play();
             $('#wake_up_modal').modal('show');
+            client.publish('IC.embedded/tEEEm/TO_PI', JSON.stringify({'type': RECEIVED_START_ALARM}));
         }
         else if (message.type == STOP_ALARM){
             audio.pause();
             $('#wake_up_modal').modal('hide');
+            client.publish('IC.embedded/tEEEm/TO_PI', JSON.stringify({'type': RECEIVED_STOP_ALARM}));
         }
         else if (message.type == SPEAK){
             responsiveVoice.speak(message.say);
