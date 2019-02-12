@@ -2,8 +2,8 @@
 const SPEECH_TRIGGER = 0;
 const TIME_SET = 1;
 const ASK_RESULTS = 2;
-const TEMPERATURE = 3;
-const HUMIDITY = 4;
+const TEMPERATURE = 0;
+const HUMIDITY = 1;
 // TO_APP TOPIC MESSAGES
 const START_ALARM = 0;
 const STOP_ALARM = 1;
@@ -39,14 +39,15 @@ client.on('message', function (topic, message) {
             audio.pause();
             $('#wake_up_modal').modal('hide');
         }
-        else if (message.type == RESULTS){
-            tempData = message.temp;
-            humidData = message.humid;
-            timeData = message.time;
-            displayGraphModal(sensorData);
-        }
         else if (message.type == SPEAK){
             responsiveVoice.speak(message.say);
+        }
+        else if (message.type == RESULTS){
+            if(message.data_for == HUMIDITY){
+                displayGraphModal("Humidity", message.humid_data, message.time);
+            } else {
+                displayGraphModal("Temperature", message.temp_data, message.time);
+            }
         }
     }
 });
@@ -57,43 +58,36 @@ function sendSleepTriggerMessage() {
 }
 
 function askTempData(){
-    client.publish('IC.embedded/tEEEm/TO_PI', JSON.stringify({'type': ASK_RESULTS, 'data': TEMPERATURE}));
+    client.publish('IC.embedded/tEEEm/TO_PI', JSON.stringify({'type': ASK_RESULTS, 'data_for': TEMPERATURE}));
 }
 
 function askHumidData(){
-    client.publish('IC.embedded/tEEEm/TO_PI', JSON.stringify({'type': ASK_RESULTS, 'data': HUMIDITY}));
+    client.publish('IC.embedded/tEEEm/TO_PI', JSON.stringify({'type': ASK_RESULTS, 'data_for': HUMIDITY}));
 }
 
-function displayGraphModal(sensorData){
+function displayGraphModal(title, sensorData, timeData){
+    console.log(timeData);
     var ctx = document.getElementById("my_chart").getContext('2d');
     let chart = new Chart(ctx, {
     type: 'line',
     data: {
         datasets:[  {
-                    data: [50, 10, 30, 20, 50, 60],
+                    data: sensorData,
                     borderColor:  '#ffffff',
                     backgroundColor: '#888888',
                     fill: true
                     } 
                 ],
-        labels: ['1 AM', '2 AM', '3 AM', '4 AM', '5 AM', '6 AM'],
+        labels: timeData,
     },
     options: {
-        legend: {
-            display: true,
-            position: 'right',
-            labels: {
-                text: 'Temperature',
-                boxWidth: 20,
-            }
+        legend:{
+            display: false
         },
-        scales: {
-            xAxes: [{
-                ticks: {
-                    min: '1 AM',
-                    max: '6 AM'
-                }
-            }]
+        title: {
+            display: true,
+            text: title,
+            fontSize: 14
         }
     }
 });
