@@ -3,6 +3,8 @@ import json
 import speech_recognition as sr
 from nlp import NLP
 import time
+from speech_synthesis import SpeechSynthesis
+speech_messages = SpeechSynthesis().messages
 
 # constants on piTopic
 SPEECH_TRIGGER = 0
@@ -62,7 +64,7 @@ def on_message(client, userdata, message):
                 print("output of natural language processing:", meaning)
                 if meaning == 'sunrise':
                     pi_data = json.dumps({'type': TIME_SET, 'nature': SUNRISE})
-                    app_data = json.dumps({'type': SPEAK, 'say': "Okay I will wake you up when the sun rises"})
+                    app_data = json.dumps({'type': SPEAK, 'say': speech_messages['WAKEUP_SUNRISE']})
                 else:
                     pi_data = json.dumps({'type': TIME_SET, 'nature': AT, 'time': meaning})
                     hour = str(int(meaning.split(' ')[1].split(':')[0]))
@@ -71,14 +73,14 @@ def on_message(client, userdata, message):
                     minute = str(int(meaning.split(' ')[1].split(':')[1]))
                     if minute == '0':
                         minute = ''
-                    app_data = json.dumps({'type': SPEAK, 'say': "Okay I will set an alarm for " + str(hour) + ' ' + str(minute)})
+                    app_data = json.dumps({'type': SPEAK, 'say': speech_messages['WAKEUP_TIME'] + str(hour) + ' ' + str(minute)})
                 client.publish(TO_PI, pi_data)
                 client.publish(TO_APP, app_data)
 
 
 mqtt.Client.connected_flag = False
 mqtt.Client.bad_connection_flag = False
-client = mqtt.Client()
+client = mqtt.Client("", True, None, protocol=mqtt.MQTTv31)
 client.on_connect=on_connect
 client.on_message=on_message
 
