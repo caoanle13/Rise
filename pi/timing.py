@@ -19,16 +19,24 @@ class Timing:
     def timeAt(self, message_time):
         wakeup_date, wakeup_time, ignore = message_time.split(' ')
         year, month, day = [int(x) for x in wakeup_date.split('-')]
-        hour, minute, second = [int(x) for x in wakeup_time.split(':')]
+        hour, minute, second = [int(float(x)) for x in wakeup_time.split(':')]
         return datetime.now().replace(year=year, month=month, day=day,
                                     hour=hour, minute=minute, second=second)
+
+
+    def currentTime(self):
+        now = datetime.now()
+        hour = str(now.hour)
+        minute = str(now.minute)
+        currTime = hour + ":" + minute
+        return currTime
 
 
 if __name__ == "__main__":
 
     t = Timing()
     sunrise = t.sunrise()
-    custom_time = t.timeAt("2019-02-09 09:30:00 +00:00")
+    custom_time = t.timeAt("2019-02-12 00:26:18.977082 +00:00")
 
     print("sunrise:", sunrise)
     print("custom time:", custom_time)
