@@ -7,7 +7,9 @@ import urllib.request
 from datetime import datetime, timedelta
 from timing import Timing
 from time import sleep
-from weather import Weather
+
+from speech_synthesis import SpeechSynthesis
+speech_messages = SpeechSynthesis().messages
 
 import threading
 
@@ -23,16 +25,16 @@ handDetected = False
 
 # temperature
 from temperature_sensor import TemperatureSensor
-temperature_data = [1, 2, 3]
+temperature_data = []
 temperature = TemperatureSensor()
 
 # humidity
 from temperature_sensor import HumiditySensor
-humidity_data = [3, 2, 1]
+humidity_data = []
 humidity = HumiditySensor()
 
 # Timing set up
-time_data=['0', '1', '2']
+time_data=[]
 t = Timing()
 
 
@@ -47,6 +49,8 @@ TIME_SET = 1
 SUNRISE = 0
 AT = 1
 ASK_RESULTS = 2
+RECEIVED_START_ALARM = 3
+RECEIVED_STOP_ALARM = 4
 
 # constants on appTopic
 START_ALARM = 0
@@ -92,45 +96,58 @@ def on_message(client, userdata, message):
 
             # while user is sleeping, i.e. alarm hasn't gone off yet
             # monitor temperature and humidity of room
-            while datetime.now() < wakeup_datetime:
-                # appending to arrays for chart display
-                # temperature data
-                temp = temperature.read()
-                temperature_data.append(temp)
-                # humidity data
-                humid = humidty.read()
-                humidity_data.append(humid)
-                # time of each reading
-                curr_time = t.currentTime()
-                time_data.append(curr_time)
-                # read every 10 minutes
-                sleep(0.5)
+            counter = 1
+            while datetime.now() < wakeup_datetime:                    
+                if datetime.now() > wakeup_datetime - timedelta(seconds=10):
+                    led.increment_LED()
+                if counter == 20:
+                    # appending to arrays for chart display
+                    # temperature data
+                    temp = temperature.read()
+                    temperature_data.append(temp)
+                    # humidity data
+                    humid = humidty.read()
+                    humidity_data.append(humid)
+                    # time of each reading
+                    curr_time = t.currentTime()
+                    time_data.append(curr_time)
+                    # read every 10 minutes
+                    counter = 0
+                counter += 1
+                sleep(0.1)
 
 
             # time to wake up!
             start_alarm_message = json.dumps({'type': START_ALARM})
             client.publish(appTopic, start_alarm_message)
 
-            # activate distance sensor to check for user's hand  
+        elif message['type'] == RECEIVED_START_ALARM:
+            # activate distance sensor to check for user's hand
             while not handDetected:
                 distance = distance.read()
                 if distance < 200:
                     # hand has come within threshold
                     # turn alarm off
                     stop_alarm_message = json.dumps({'type': STOP_ALARM})
+                    # turn LED off
+                    led.turn_off()
                     client.publish(appTopic, stop_alarm_message)
                     handDetected = True
+            
+            stop_alarm_message = json.dumps({'type': STOP_ALARM})
+            client.publish(appTopic, stop_alarm_message)
 
+        elif message['type'] == RECEIVED_STOP_ALARM:
             # greet user and give weather info
-            w = Weather()
-            client.publish(appTopic, json.dumps({'type': SPEAK, 'say': 'Good Morning! The current weather state is ' + w.description + ' and it is ' + str(w.temperature) + 'degrees Celsius.'}))
+            client.publish(appTopic, json.dumps({'type': SPEAK, 'say': speech_messages['GOOD_MORNING']}))
+
 
         elif message['type'] == ASK_RESULTS:
             # add all temperature sensor data to a dictionary
             # monitors room overnight and then displays graphically on web page
             # check if there is any data first
             if len(temperature_data) == 0 or len(humidity_data) == 0:
-                client.publish(appTopic, json.dumps({'type': SPEAK, 'say': 'There is currently no data for your night.'}))
+                client.publish(appTopic, json.dumps({'type': SPEAK, 'say': speech_messages['NO_DATA']}))
             else:
                 # if user asked for temperature data
                 if message['data_for'] == TEMPERATURE:
@@ -140,7 +157,7 @@ def on_message(client, userdata, message):
                         'temp_data': temperature_data,    # array of ints
                         'time': time_data                 # array strings: hh:mm
                     }
-                    client.publish(appTopic, json.dumps({'type': SPEAK, 'say': 'Here is your temperature data.'}))
+                    client.publish(appTopic, json.dumps({'type': SPEAK, 'say': speech_messages['TEMP_DATA']}))
                 # else if user asked for humidity data
                 elif message['data_for'] == HUMIDITY:
                     data =  {
@@ -149,13 +166,13 @@ def on_message(client, userdata, message):
                         'humid_data': humidity_data,      # array of ints
                         'time': time_data                 # array strings: hh:mm
                     }
-                    client.publish(appTopic, json.dumps({'type': SPEAK, 'say': 'Here is your humidity data.'}))
+                    client.publish(appTopic, json.dumps({'type': SPEAK, 'say': speech_messages['HUMID_DATA']}))
                 client.publish(appTopic, json.dumps(data))
 
 
 mqtt.Client.connected_flag = False
 mqtt.Client.bad_connection_flag = False
-client = mqtt.Client()
+client = mqtt.Client("", True, None, protocol=mqtt.MQTTv31)
 client.on_connect=on_connect
 client.on_message=on_message
 
