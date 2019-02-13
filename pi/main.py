@@ -3,6 +3,10 @@
 import time
 import json
 import urllib.request
+import board
+import busio
+import adafruit_vl53l0x
+import adafruit_si7021
 
 from datetime import datetime, timedelta
 from timing import Timing
