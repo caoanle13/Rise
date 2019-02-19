@@ -4,13 +4,13 @@ Start your day right with our smart alarm clock. Speak to Rise to set your alarm
 
 ## About This Repository
 
-pi: contains the files on the Raspberry Pi, including sensor, hardware and speech modules, and communication with MQTT broker.
-www: contains the interface (index.html) and its associated JavaScript file (index.js) which manages communication with server.
+* **pi:** contains the files on the Raspberry Pi, including sensor, hardware and speech modules, and communication with MQTT broker.
+* **www:** contains the interface (index.html) and its associated JavaScript file (index.js) which manages communication with server.
 
 ### Sensors & Additional Hardware Used
 
-Temperature & Humidity Sensor (Adafruit Si7021): Measures the temperature and humidity of your sleep environment.
-Distance sensor (Adafruit VL53L0X): Used to stop the alarm by hovering your hand over the device.
+* **Temperature & Humidity Sensor (Adafruit Si7021):** Measures the temperature and humidity of your sleep environment.
+* **Distance sensor (Adafruit VL53L0X):** Used to stop the alarm by hovering your hand over the device.
 
 ## Running The Application
 
