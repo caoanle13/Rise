@@ -9,10 +9,10 @@ www: contains the interface (index.html) and its associated JavaScript file (ind
 
 ### Sensors & Additional Hardware Used
 
-Temperature & Humidity Sensor: Measures the temperature and humidity of your sleep environment.
-Distance sensor: testsUsed to stop the alarm by hovering your hand over the device.
+Temperature & Humidity Sensor (Adafruit Si7021): Measures the temperature and humidity of your sleep environment.
+Distance sensor (Adafruit VL53L0X): Used to stop the alarm by hovering your hand over the device.
 
-## Running the application
+## Running The Application
 
 1. Open the interface (index.html) and run speech.py on your PC.
 2. Run main.py on the Raspberry Pi.
