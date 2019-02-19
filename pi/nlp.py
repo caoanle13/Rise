@@ -4,6 +4,7 @@ import json
 from snips_nlu import SnipsNLUEngine, load_resources
 from snips_nlu.default_configs import CONFIG_EN
 
+# Class to do Natural Language Processing after speech recognition
 class NLP():
 
     def __init__(self):

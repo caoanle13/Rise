@@ -31,10 +31,12 @@ def on_connect(client, userdata, flags, rc):
         print('Bad connection, returned code=', rc)
         client.bad_connection_flag=True
 
+# function for speech recognition
 def recognize():
     r = sr.Recognizer()
     print('Speech starts listening')
     with sr.Microphone() as source:
+        r.adjust_for_ambient_noise(source)
         print("Say something!")
         audio = r.listen(source)
     try:
@@ -54,10 +56,11 @@ def on_message(client, userdata, message):
     if message_type == SPEECH_TRIGGER:
 
         time.sleep(2)
-        
+        # speech recognition
         speech_success, text = recognize()
         if speech_success: 
             print("output of speech recognition:", text)
+            # natural language processing
             nlp = NLP()
             nlp_success, meaning = nlp.parse(text)
             if nlp_success:
@@ -86,16 +89,9 @@ client.on_message=on_message
 
 print('Connecting to broker')
 try:
-    client.connect("test.mosquitto.org",port=1883)
+    client.connect("ee-estott-octo.ee.ic.ac.uk",port=1883)
 except:
     print('connection failed!')
 
-# while not client.connected_flag and not client.bad_connection_flag:
-#     print('in wait loop')
-#     time.sleep(1)
-# if client.bad_connection_flag:
-#     client.loop_stop()
-#     sys.exit()
-# print('in Main loop')
 
 client.loop_forever()

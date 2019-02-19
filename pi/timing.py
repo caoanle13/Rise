@@ -3,6 +3,7 @@ import urllib.request
 import os, ssl
 import json
 
+# Class to manage time
 class Timing:
 
     def sunrise(self):

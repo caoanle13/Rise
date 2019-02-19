@@ -4,7 +4,7 @@ import time
 import RPi.GPIO as GPIO
 from time import sleep
 
-
+# Class to control LED
 class LED:
 
     def __init__(self, r, g, b, r_duty, g_duty, b_duty):
@@ -16,21 +16,21 @@ class LED:
 
 
         # choose BCM or BOARD numbering schemes
-        GPIO.setmode(GPIO.BOARD)
+        GPIO.setmode(GPIO.BCM)
 
         # disable warnings
         GPIO.setwarnings(False)
 
         # setup
-        self.RGB = [12,11,13]
+        self.RGB = [18,17,27]
         for pin in self.RGB:
             # sets each pin as output for LED
             GPIO.setup(pin,GPIO.OUT,initial=GPIO.HIGH)
 
         # setup for PWM at 1000 Hertz for each colour
-        self.R = GPIO.PWM(12,r)
-        self.G = GPIO.PWM(11,g)
-        self.B = GPIO.PWM(13,b)
+        self.R = GPIO.PWM(18,r)
+        self.G = GPIO.PWM(17,g)
+        self.B = GPIO.PWM(27,b)
 
         # start LED
         self.R.start(self.r_duty)
@@ -39,17 +39,17 @@ class LED:
 
 
     def increment_LED(self):
-        self.r_duty = self.r_duty - 1 if self.r_duty > 0 else 0
-        self.g_duty = self.g_duty - 1 if self.g_duty > 0 else 0
-        self.b_duty = self.b_duty - 1 if self.b_duty > 0 else 0
+        self.r_duty = self.r_duty - 0.5 if self.r_duty > 0 else 0
+        self.g_duty = self.g_duty - 0.5 if self.g_duty > 0 else 0
+        self.b_duty = self.b_duty - 0.5 if self.b_duty > 0 else 0
         self.R.ChangeDutyCycle(self.r_duty)
         self.G.ChangeDutyCycle(self.g_duty)
         self.B.ChangeDutyCycle(self.b_duty)
 
     def decrement_LED(self):
-        self.r_duty = self.r_duty + 1 if self.r_duty < 100 else 100
-        self.g_duty = self.g_duty + 1 if self.g_duty < 100 else 100
-        self.b_duty = self.b_duty + 1 if self.b_duty < 100 else 100
+        self.r_duty = self.r_duty + 0.5 if self.r_duty < 100 else 100
+        self.g_duty = self.g_duty + 0.5 if self.g_duty < 100 else 100
+        self.b_duty = self.b_duty + 0.5 if self.b_duty < 100 else 100
         self.R.ChangeDutyCycle(self.r_duty)
         self.G.ChangeDutyCycle(self.g_duty)
         self.B.ChangeDutyCycle(self.b_duty)

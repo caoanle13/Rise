@@ -2,6 +2,7 @@ import urllib.request
 import os, ssl
 import json
 
+# Class to get weather info from API
 class Weather:
 
  def __init__(self):

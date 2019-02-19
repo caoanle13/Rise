@@ -1,7 +1,7 @@
 from weather import Weather
 
 
-
+# Class containing message to be synthesised as speech
 class SpeechSynthesis():
     def __init__(self):
         self.messages = {

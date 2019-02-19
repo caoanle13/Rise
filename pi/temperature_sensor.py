@@ -3,6 +3,8 @@ import board
 import adafruit_si7021
 from datetime import datetime
 
+# Classes to read from Temperature and Humidity sensors
+
 class TemperatureSensor:
 
     def __init__(self):

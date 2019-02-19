@@ -3,10 +3,6 @@
 import time
 import json
 import urllib.request
-import board
-import busio
-import adafruit_vl53l0x
-import adafruit_si7021
 
 from datetime import datetime, timedelta
 from timing import Timing
@@ -24,7 +20,6 @@ led = LED(1000, 1000, 1000, 100, 100, 100)
 # sensor setup
 # distance
 from distance_sensor import DistanceSensor
-distance = DistanceSensor()
 handDetected = False
 
 # temperature
@@ -101,10 +96,14 @@ def on_message(client, userdata, message):
             # while user is sleeping, i.e. alarm hasn't gone off yet
             # monitor temperature and humidity of room
             counter = 1
-            while datetime.now() < wakeup_datetime:                    
-                if datetime.now() > wakeup_datetime - timedelta(seconds=10):
+            temperature_data.clear()
+            humidity_data.clear()
+            time_data.clear()
+            while datetime.now() < wakeup_datetime:           
+                if datetime.now() > wakeup_datetime - timedelta(seconds=20):
                     led.increment_LED()
-                if counter == 20:
+                if counter == 40:
+                    print('counter equals 20')
                     # appending to arrays for chart display
                     # temperature data
                     temp = temperature.read()
@@ -126,6 +125,7 @@ def on_message(client, userdata, message):
             client.publish(appTopic, start_alarm_message)
 
         elif message['type'] == RECEIVED_START_ALARM:
+            distance = DistanceSensor()
             # activate distance sensor to check for user's hand
             while not handDetected:
                 distance = distance.read()
@@ -159,7 +159,7 @@ def on_message(client, userdata, message):
                         'type': RESULTS,
                         'data_for': TEMPERATURE,
                         'temp_data': temperature_data,    # array of ints
-                        'time': time_data                 # array strings: hh:mm
+                        'time': time_data                 # array strings: hh:mm:ss
                     }
                     client.publish(appTopic, json.dumps({'type': SPEAK, 'say': speech_messages['TEMP_DATA']}))
                 # else if user asked for humidity data
@@ -168,7 +168,7 @@ def on_message(client, userdata, message):
                         'type': RESULTS,
                         'data_for': HUMIDITY,
                         'humid_data': humidity_data,      # array of ints
-                        'time': time_data                 # array strings: hh:mm
+                        'time': time_data                 # array strings: hh:mm:ss
                     }
                     client.publish(appTopic, json.dumps({'type': SPEAK, 'say': speech_messages['HUMID_DATA']}))
                 client.publish(appTopic, json.dumps(data))
@@ -182,16 +182,9 @@ client.on_message=on_message
 
 print('Connecting to broker')
 try:
-    client.connect("test.mosquitto.org",port=1883)
+    client.connect("ee-estott-octo.ee.ic.ac.uk",port=1883)
 except:
     print('connection failed!')
 
-# while not client.connected_flag and not client.bad_connection_flag:
-#     print('in wait loop')
-#     time.sleep(1)
-# if client.bad_connection_flag:
-#     client.loop_stop()
-#     sys.exit()
-# print('in Main loop')
 
 client.loop_forever()

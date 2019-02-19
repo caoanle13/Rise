@@ -15,9 +15,8 @@ const SPEAK = 3;
 var audio = document.getElementById('alarm');
 var temperatureData;
 
-//var audio = document.getElementById('alarm')
 
-var client = mqtt.connect('mqtt://test.mosquitto.org:8080');
+var client = mqtt.connect('mqtt://ee-estott-octo.ee.ic.ac.uk:8080');
 
 client.on('connect', function () {
     console.log('connected to MQTT!');
@@ -28,24 +27,35 @@ client.on('connect', function () {
     });
 });
 
+// Callback when message is received on subscribed topic
 client.on('message', function (topic, message) {
-    //console.log(message)
-    //console.log('received message!');
+
+    // Parse the message
     var message = JSON.parse(message)
+
+    // Check that it is the right topic
     if(topic === 'IC.embedded/tEEEm/TO_APP'){
+
+        // START_ALARM: play alarm and display wake up modal
         if (message.type == START_ALARM){
             audio.play();
             $('#wake_up_modal').modal('show');
             client.publish('IC.embedded/tEEEm/TO_PI', JSON.stringify({'type': RECEIVED_START_ALARM}));
         }
+
+        // STOP_ALARM: stop alarm and hide wake up modal
         else if (message.type == STOP_ALARM){
             audio.pause();
             $('#wake_up_modal').modal('hide');
             client.publish('IC.embedded/tEEEm/TO_PI', JSON.stringify({'type': RECEIVED_STOP_ALARM}));
         }
+
+        // SPEAK: perform speech synthesis of the received message
         else if (message.type == SPEAK){
             responsiveVoice.speak(message.say);
         }
+
+        // RESULTS: display results in graph modal
         else if (message.type == RESULTS){
             if(message.data_for == HUMIDITY){
                 displayGraphModal("Humidity", message.humid_data, message.time);
@@ -56,19 +66,23 @@ client.on('message', function (topic, message) {
     }
 });
 
+// Function to send a SPEECH_TRIGGER message (when user presses sleep button)
 function sendSleepTriggerMessage() {
     responsiveVoice.speak("When would you like to wake up?");
     client.publish('IC.embedded/tEEEm/TO_PI', JSON.stringify({'type': SPEECH_TRIGGER})); 
 }
 
+// Function to send ASK_RESULTS for Temperature message (when user presses on data graph buttons)
 function askTempData(){
     client.publish('IC.embedded/tEEEm/TO_PI', JSON.stringify({'type': ASK_RESULTS, 'data_for': TEMPERATURE}));
 }
 
+// Function to send ASK_RESULTS for Humidity message (when user presses on data graph buttons)
 function askHumidData(){
     client.publish('IC.embedded/tEEEm/TO_PI', JSON.stringify({'type': ASK_RESULTS, 'data_for': HUMIDITY}));
 }
 
+// Function to display the graph modal upon receival of a RESULTS message
 function displayGraphModal(title, sensorData, timeData){
     console.log(timeData);
     var ctx = document.getElementById("my_chart").getContext('2d');
