@@ -22,4 +22,4 @@ Start your day right with our smart alarm clock. Speak to Rise to set your alarm
 * **Anuja Gaitonde** - *Web and Graphic Designer*
 * **Cao An Le** - *App Developer*
 * **Loic Alix-Brown** - *Marketing*
-* **Anuja Gaitonde** - *Software & Hardware Developer*
+* **Rebecca Hallam** - *Software & Hardware Developer*
